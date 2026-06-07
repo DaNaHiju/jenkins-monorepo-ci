@@ -6,13 +6,13 @@ pipeline {
         stage('Detect changed services') {
             steps {
                 script {
-                    // List changed files vs the previous commit, then keep the top-level folder of each
+                    // Detection logic now lives in a shared script (modular, reusable)
                     def changed = sh(
-                        script: "git diff --name-only HEAD~1 HEAD | cut -d/ -f1 | sort -u",
+                        script: "bash shared/ci/detect.sh",
                         returnStdout: true
                     ).trim()
 
-                    echo "Changed folders:\n${changed}"
+                    echo "Services to build:\n${changed}"
                     env.CHANGED_SERVICES = changed
                 }
             }
