@@ -6,7 +6,6 @@ pipeline {
         stage('Detect changed services') {
             steps {
                 script {
-                    // Detection logic now lives in a shared script (modular, reusable)
                     def changed = sh(
                         script: "bash shared/ci/detect.sh",
                         returnStdout: true
@@ -18,9 +17,17 @@ pipeline {
             }
         }
 
-        stage('CI (placeholder)') {
+        stage('Verify Node agent') {
+            agent {
+                docker {
+                    image 'node:20-alpine'
+                    args '-v jenkins_home:/var/jenkins_home'
+                    reuseNode true
+                }
+            }
             steps {
-                echo "Would run CI for:\n${env.CHANGED_SERVICES}"
+                sh 'node --version'
+                sh 'npm --version'
             }
         }
     }
