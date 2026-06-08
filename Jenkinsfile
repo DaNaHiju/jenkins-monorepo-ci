@@ -20,7 +20,7 @@ pipeline {
         stage('Verify Node agent') {
             agent {
                 docker {
-                    image 'node:20-alpine'
+                    image 'node:20'
                     args '-v jenkins_home:/var/jenkins_home'
                     reuseNode true
                 }
