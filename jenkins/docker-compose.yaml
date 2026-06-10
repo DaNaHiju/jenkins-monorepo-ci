@@ -10,6 +10,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
       - "1001" # Add the Jenkins user to the Docker group
+    environment:
+      - JAVA_OPTS=-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true
     
 
 volumes:
