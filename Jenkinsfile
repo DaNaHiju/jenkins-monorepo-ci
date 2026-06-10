@@ -1,8 +1,6 @@
 pipeline {
     agent any
-
     stages {
-
         stage('Detect changed services') {
             steps {
                 script {
@@ -10,34 +8,41 @@ pipeline {
                         script: "bash shared/ci/detect.sh",
                         returnStdout: true
                     ).trim()
-
                     echo "Services to build:\n${changed}"
                     env.CHANGED_SERVICES = changed
                 }
             }
         }
-
-        stage('Verify Node agent') {
-            agent {
-                docker {
-                    image 'node:20-alpine'
-                    reuseNode true
+        stage('Lint') {
+            parallel {
+                stage('Lint user-service') {
+                    agent {
+                        docker {
+                            image 'node:20-alpine'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        dir('user-service') {
+                            sh 'npm install'
+                            sh 'npm run lint'
+                        }
+                    }
                 }
-            }
-            steps {
-                sh 'node --version'
-                sh 'npm --version'
-            }}
-        stage('Verify Python agent') {
-            agent {
-                docker {
-                    image 'python:3.12-slim'
-                    reuseNode true
+                stage('Lint transaction-service') {
+                    agent {
+                        docker {
+                            image 'python:3.12-slim'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        dir('transaction-service') {
+                            sh 'pip install -r requirements.txt'
+                            sh 'flake8 .'
+                        }
+                    }
                 }
-            }
-            steps {
-                sh 'python --version'
-                sh 'pip --version'
             }
         }
     }
