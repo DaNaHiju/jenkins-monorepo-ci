@@ -27,6 +27,17 @@ pipeline {
             steps {
                 sh 'node --version'
                 sh 'npm --version'
+            }}
+        stage('Verify Python agent') {
+            agent {
+                docker {
+                    image 'python:3.12-slim'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'python --version'
+                sh 'pip --version'
             }
         }
     }
