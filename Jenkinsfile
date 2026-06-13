@@ -46,5 +46,48 @@ pipeline {
                 }
             }
         }
+        stage('Test') {
+            parallel {
+                stage('Test user-service') {
+                    agent {
+                        docker {
+                            image 'node:20-alpine'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        dir('user-service') {
+                            sh 'npm install'
+                            sh 'npm test'
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'user-service/reports/junit.xml'
+                        }
+                    }
+                }
+                stage('Test transaction-service') {
+                    agent {
+                        docker {
+                            image 'python:3.12-slim'
+                            args '--user root'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        dir('transaction-service') {
+                            sh 'pip install --break-system-packages -r requirements.txt'
+                            sh 'pytest --junitxml=reports/junit.xml'
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'transaction-service/reports/junit.xml'
+                        }
+                    }
+                }
+            }
+        }
     }
 }
