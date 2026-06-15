@@ -121,5 +121,39 @@ pipeline {
                 }
             }
         }
+        stage('Docker Build & Push') {
+            parallel {
+                stage('Build user-service') {
+                    steps {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'dockerhub-credentials',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )]) {
+                            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                            dir('user-service') {
+                                sh 'docker build -t $DOCKER_USER/user-service:${BUILD_NUMBER} .'
+                                sh 'docker push $DOCKER_USER/user-service:${BUILD_NUMBER}'
+                            }
+                        }
+                    }
+                }
+                stage('Build transaction-service') {
+                    steps {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'dockerhub-credentials',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )]) {
+                            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                            dir('transaction-service') {
+                                sh 'docker build -t $DOCKER_USER/transaction-service:${BUILD_NUMBER} .'
+                                sh 'docker push $DOCKER_USER/transaction-service:${BUILD_NUMBER}'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
