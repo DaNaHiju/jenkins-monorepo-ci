@@ -156,4 +156,24 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_URL')]) {
+                sh '''
+                    curl -X POST -H 'Content-type: application/json' \
+                    --data '{"text":"✅ Pipeline #'"$BUILD_NUMBER"' SUCCESS: '"$JOB_NAME"'"}' \
+                    $SLACK_URL
+                '''
+            }
+        }
+        failure {
+            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_URL')]) {
+                sh '''
+                    curl -X POST -H 'Content-type: application/json' \
+                    --data '{"text":"❌ Pipeline #'"$BUILD_NUMBER"' FAILED: '"$JOB_NAME"'"}' \
+                    $SLACK_URL
+                '''
+            }
+        }
+    }
 }
