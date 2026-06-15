@@ -71,6 +71,7 @@ pipeline {
                     agent {
                         docker {
                             image 'python:3.12-slim'
+
                             args '--user root'
                             reuseNode true
                         }
@@ -84,6 +85,38 @@ pipeline {
                     post {
                         always {
                             junit 'transaction-service/reports/junit.xml'
+                        }
+                    }
+                }
+                stage('Scan') {
+                    parallel {
+                        stage('Scan user-service') {
+                            agent {
+                                docker {
+                                    image 'node:20-alpine'
+                                    reuseNode true
+                                }
+                            }
+                            steps {
+                                dir('user-service') {
+                                    sh 'npm audit --audit-level=high'
+                                }
+                            }
+                        }
+                        stage('Scan transaction-service') {
+                            agent {
+                                docker {
+                                    image 'python:3.12-slim'
+                                    args '--user root'
+                                    reuseNode true
+                                }
+                            }
+                            steps {
+                                dir('transaction-service') {
+                                    sh 'pip install --break-system-packages pip-audit'
+                                    sh 'pip-audit -r requirements.txt'
+                                }
+                            }
                         }
                     }
                 }
