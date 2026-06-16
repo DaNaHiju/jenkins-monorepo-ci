@@ -121,6 +121,11 @@ pipeline {
                 }
             }
         }
+        stage('Approval') {
+            steps {
+                input message: 'Deploy images to DockerHub?', ok: 'Approve'
+            }
+        }
         stage('Docker Build & Push') {
             parallel {
                 stage('Build user-service') {
