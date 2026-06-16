@@ -23,7 +23,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'bash shared/ci/lint.sh user-service'
+                        sh 'sh shared/ci/lint.sh user-service'
                     }
                 }
                 stage('Lint transaction-service') {
@@ -35,7 +35,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'bash shared/ci/lint.sh transaction-service'
+                        sh 'sh shared/ci/lint.sh transaction-service'
                     }
                 }
             }
@@ -50,7 +50,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'bash shared/ci/test.sh user-service'
+                        sh 'sh shared/ci/test.sh user-service'
                     }
                     post {
                         always {
@@ -67,7 +67,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'bash shared/ci/test.sh transaction-service'
+                        sh 'sh shared/ci/test.sh transaction-service'
                     }
                     post {
                         always {
@@ -87,7 +87,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'bash shared/ci/scan.sh user-service'
+                        sh 'sh shared/ci/scan.sh user-service'
                     }
                 }
                 stage('Scan transaction-service') {
@@ -99,7 +99,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'bash shared/ci/scan.sh transaction-service'
+                        sh 'sh shared/ci/scan.sh transaction-service'
                     }
                 }
             }
