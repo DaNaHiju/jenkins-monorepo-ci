@@ -23,10 +23,7 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('user-service') {
-                            sh 'npm install'
-                            sh 'npm run lint'
-                        }
+                        sh 'bash shared/ci/lint.sh user-service'
                     }
                 }
                 stage('Lint transaction-service') {
@@ -38,10 +35,7 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('transaction-service') {
-                            sh 'pip install --break-system-packages -r requirements.txt'
-                            sh 'flake8 .'
-                        }
+                        sh 'bash shared/ci/lint.sh transaction-service'
                     }
                 }
             }
@@ -56,10 +50,7 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('user-service') {
-                            sh 'npm install'
-                            sh 'npm test'
-                        }
+                        sh 'bash shared/ci/test.sh user-service'
                     }
                     post {
                         always {
@@ -76,10 +67,7 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('transaction-service') {
-                            sh 'pip install --break-system-packages -r requirements.txt'
-                            sh 'pytest --junitxml=reports/junit.xml'
-                        }
+                        sh 'bash shared/ci/test.sh transaction-service'
                     }
                     post {
                         always {
@@ -99,9 +87,7 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('user-service') {
-                            sh 'npm audit --audit-level=high'
-                        }
+                        sh 'bash shared/ci/scan.sh user-service'
                     }
                 }
                 stage('Scan transaction-service') {
@@ -113,10 +99,7 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('transaction-service') {
-                            sh 'pip install --break-system-packages pip-audit'
-                            sh 'pip-audit -r requirements.txt'
-                        }
+                        sh 'bash shared/ci/scan.sh transaction-service'
                     }
                 }
             }
